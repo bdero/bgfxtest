@@ -1,0 +1,11 @@
+# Binaries
+*.cbp
+*.exe
+*.a
+*.o
+*.bc
+build/
+
+# Editor files
+.idea/
+.vscode/
