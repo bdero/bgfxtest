@@ -10,3 +10,6 @@
 [submodule "deps/bimg"]
 	path = deps/bimg
 	url = https://github.com/bkaradzic/bimg.git
+[submodule "deps/emscripten_ports/SDL2"]
+	path = deps/emscripten_ports/SDL2
+	url = https://github.com/emscripten-ports/SDL2.git
