@@ -14,8 +14,8 @@ RELEASE_PATH := $(BUILD_PATH)/bin
 INCLUDE_FILE_CHECK := $(INCLUDE_PATH)/SDL2/SDL.h
 CXX_FILE_CHECK := $(CXX)
 
-CXXFLAGS := -std=c++11 -Wall -Ideps/bx/include -Ideps/bgfx/include -I$(INCLUDE_PATH) -s USE_SDL=2 -s USE_WEBGL2=1 -s FULL_ES3=1 -s ALLOW_MEMORY_GROWTH=1
-LINKFLAGS := -s USE_SDL=2 -s USE_WEBGL2=1 -s FULL_ES3=1 -s ALLOW_MEMORY_GROWTH=1
+CXXFLAGS := -std=c++11 -Wall -Ideps/bx/include -Ideps/bgfx/include -I$(INCLUDE_PATH) -s WASM=1 -s USE_SDL=2 -s USE_WEBGL2=1 -s FULL_ES3=1 -s ALLOW_MEMORY_GROWTH=1
+LINKFLAGS := -s WASM=1 -s USE_SDL=2 -s USE_WEBGL2=1 -s FULL_ES3=1 -s ALLOW_MEMORY_GROWTH=1
 
 ifeq ($(TARGET), Debug)
 $(info ===== Build mode set to TARGET=Debug =====)
@@ -54,11 +54,15 @@ $(BGFX_LIBS_PATH)/%Release.a:
 	EMSCRIPTEN=$(EMSCRIPTEN_ABS) make -C deps/bgfx asmjs-release
 
 $(BGFX_LIBS_PATH)/%Debug.a:
-	EMSCRIPTEN=$(EMSCRIPTEN_ABS) EMCC_DEBUG=1 ASSERTIONS=2 SAFE_HEAP=1 STACK_OVERFLOW_CHECK=2 make -C deps/bgfx asmjs-debug
+	EMSCRIPTEN=$(EMSCRIPTEN_ABS) WASM=1 EMCC_DEBUG=1 ASSERTIONS=2 SAFE_HEAP=1 STACK_OVERFLOW_CHECK=2 make -C deps/bgfx asmjs-debug
 
 .PHONY: bgfx
 bgfx:
-	$(call $(word 1, $(BGFX_LIBS)))
+    $(call $(word 1, $(BGFX_LIBS)))
+
+.PHONY: cleanbgfx
+cleanbgfx:
+	rm $(BGFX_LIBS)
 
 $(CXX_FILE_CHECK): $(EMSDK)
 	# cd deps/emsdk && ./emsdk install sdk-incoming-64bit

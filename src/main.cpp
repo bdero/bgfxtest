@@ -106,33 +106,5 @@ void updateApp() {
   bgfx::touch(0);
   bgfx::dbgTextClear();
 
-  /* const bgfx::Stats* stats = bgfx::getStats();
-			bgfx::dbgTextPrintf(0, 2, 0x0f, "Backbuffer %dW x %dH in pixels, debug text %dW x %dH in characters."
-				, stats->width
-				, stats->height
-				, stats->textWidth
-				, stats->textHeight
-  );*/
-
-  // Advance to next frame. Rendering thread will be kicked to
-  // process submitted rendering primitives.
   bgfx::frame();
 }
-/*
-int main(int argc, char** argv) {
-  std::cout << "Hello, World!" << std::endl;
-
-  //bgfx::renderFrame();
-
-  bgfx::Init init;
-  init.resolution.width = 800;
-  init.resolution.height = 600;
-
-  if (!bgfx::init(init))
-    return 1;
-
-  //emscripten_set_main_loop(&updateApp, -1, 1);
-
-  return 0;
-}
-*/
