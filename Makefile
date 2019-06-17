@@ -1,6 +1,8 @@
 TARGET?=Debug
 
-EMSCRIPTEN := deps/emsdk/fastcomp/emscripten
+EMSDK := deps/emsdk
+EMSDK_ABS :=$(addprefix ${CURDIR}/, $(EMSDK))
+EMSCRIPTEN := $(EMSDK)/fastcomp/emscripten
 EMSCRIPTEN_ABS :=$(addprefix ${CURDIR}/, $(EMSCRIPTEN))
 EMSDK := deps/emsdk/emsdk
 CXX := $(EMSCRIPTEN)/em++
@@ -15,12 +17,12 @@ INCLUDE_FILE_CHECK := $(INCLUDE_PATH)/SDL2/SDL.h
 CXX_FILE_CHECK := $(CXX)
 
 CXXFLAGS := -std=c++11 -Wall -Ideps/bx/include -Ideps/bgfx/include -I$(INCLUDE_PATH) -s WASM=1 -s USE_SDL=2 -s USE_WEBGL2=1 -s FULL_ES3=1 -s ALLOW_MEMORY_GROWTH=1
-LINKFLAGS := -s WASM=1 -s USE_SDL=2 -s USE_WEBGL2=1 -s FULL_ES3=1 -s ALLOW_MEMORY_GROWTH=1
+LINKFLAGS := -s WASM=1 -s USE_SDL=2 -s USE_WEBGL2=1 -s FULL_ES3=1 -s ALLOW_MEMORY_GROWTH=1 -lGL
 
 ifeq ($(TARGET), Debug)
 $(info ===== Build mode set to TARGET=Debug =====)
 CXXFLAGS += -g4 -v -s ASSERTIONS=2 -s SAFE_HEAP=1 -s STACK_OVERFLOW_CHECK=2
-LINKFLAGS += -v -s ASSERTIONS=2 -s SAFE_HEAP=1 -s STACK_OVERFLOW_CHECK=2
+LINKFLAGS += -v
 else
 TARGET = Release
 $(info ===== Build mode set to TARGET=Release =====)
@@ -51,10 +53,10 @@ $(OBJ_PATH)/%.bc: $(SRC_PATH)/%.cpp $(CXX_FILE_CHECK) $(INCLUDE_FILE_CHECK)
 	"$(CXX)" $(CXXFLAGS) -c -o $@ $<
 
 $(BGFX_LIBS_PATH)/%Release.a:
-	EMSCRIPTEN=$(EMSCRIPTEN_ABS) make -C deps/bgfx asmjs-release
+	EMSDK=$(EMSDK_ABS) EMSCRIPTEN=$(EMSCRIPTEN_ABS) $(MAKE) -C deps/bgfx asmjs-release
 
 $(BGFX_LIBS_PATH)/%Debug.a:
-	EMSCRIPTEN=$(EMSCRIPTEN_ABS) WASM=1 EMCC_DEBUG=1 ASSERTIONS=2 SAFE_HEAP=1 STACK_OVERFLOW_CHECK=2 make -C deps/bgfx asmjs-debug
+	EMSDK=$(EMSDK_ABS) EMSCRIPTEN=$(EMSCRIPTEN_ABS) WASM=1 EMCC_DEBUG=1 ASSERTIONS=2 SAFE_HEAP=1 STACK_OVERFLOW_CHECK=2 $(MAKE) -C deps/bgfx asmjs-debug
 
 .PHONY: bgfx
 bgfx:
@@ -68,6 +70,7 @@ $(CXX_FILE_CHECK): $(EMSDK)
 	# cd deps/emsdk && ./emsdk install sdk-incoming-64bit
 	# cd deps/emsdk && ./emsdk activate sdk-incoming-64bit
 	cd deps/emsdk && ./emsdk install latest
+	cd deps/emsdk && ./emsdk activate latest
 	$(call patch_emscripten)
 
 $(INCLUDE_FILE_CHECK): $(EMSDK)
